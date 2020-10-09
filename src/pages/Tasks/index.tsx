@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Badge, Table, Button } from "react-bootstrap";
+import { useHistory } from "react-router-dom";
 
 import "./index.css";
 import apiConfig from "../../config/apiConfig";
@@ -8,6 +9,12 @@ import { formatDate } from "./taskUtils";
 
 const Tasks: React.FC = () => {
 	const [tasks, setTasks] = useState<ITask[]>([]);
+
+	const history = useHistory();
+
+	const newTask = () => {
+		history.push("/tasks_add");
+	};
 
 	const loadTasks = async () => {
 		const tasks = await apiConfig.get("/tasks");
@@ -28,7 +35,7 @@ const Tasks: React.FC = () => {
 			<br />
 			<div className="task-header">
 				<h1>Lista de tarefas</h1>
-				<Button size="sm" variant="dark">
+				<Button onClick={newTask} size="sm" variant="dark">
 					Nova tarefa
 				</Button>
 			</div>
