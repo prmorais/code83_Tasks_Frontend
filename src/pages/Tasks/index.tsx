@@ -16,6 +16,14 @@ const Tasks: React.FC = () => {
 		history.push("/tasks_add");
 	};
 
+	function editTask(id: number) {
+		history.push(`/tasks_edit/${id}`);
+	}
+
+	const viewTask = (id: number) => {
+		history.push(`/tasks_detail/${id}`);
+	};
+
 	const loadTasks = async () => {
 		const tasks = await apiConfig.get("/tasks");
 		setTasks(tasks.data);
@@ -65,7 +73,9 @@ const Tasks: React.FC = () => {
 							</td>
 							<td>{formatDate(task.updated_at)}</td>
 							<td>
-								<Button size="sm">Editar</Button>{" "}
+								<Button onClick={() => editTask(task.id)} size="sm">
+									Editar
+								</Button>{" "}
 								<Button
 									onClick={() => statusTask(task.id)}
 									size="sm"
@@ -73,7 +83,11 @@ const Tasks: React.FC = () => {
 								>
 									{!task.finished ? "Finalizar" : "Pendente"}
 								</Button>{" "}
-								<Button size="sm" variant="info">
+								<Button
+									onClick={() => viewTask(task.id)}
+									size="sm"
+									variant="info"
+								>
 									Visualizar
 								</Button>{" "}
 								<Button size="sm" variant="danger">

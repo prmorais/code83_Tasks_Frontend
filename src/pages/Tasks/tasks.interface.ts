@@ -11,3 +11,7 @@ export interface ITaskIinput {
 	title: string;
 	description: string;
 }
+
+export interface IParams {
+	id: string;
+}

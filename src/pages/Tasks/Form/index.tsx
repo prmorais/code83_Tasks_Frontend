@@ -1,18 +1,25 @@
-import React, { ChangeEvent, useState } from "react";
-import { useHistory } from "react-router-dom";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 
 import { Button, Form } from "react-bootstrap";
 
-import { ITaskIinput } from "../tasks.interface";
+import { IParams, ITaskIinput } from "../tasks.interface";
 import apiConfig from "../../../config/apiConfig";
 
 const TaskForm: React.FC = () => {
 	const [model, setModel] = useState<ITaskIinput>({
-		title: "null",
+		title: "",
 		description: "",
 	});
 
 	const history = useHistory();
+	const { id } = useParams<IParams>();
+
+	useEffect(() => {
+		if (id !== undefined) {
+			findTask(id);
+		}
+	}, [id]);
 
 	const updateModel = (e: ChangeEvent<HTMLInputElement>) => {
 		setModel({
@@ -23,10 +30,23 @@ const TaskForm: React.FC = () => {
 
 	const onSubmit = async (e: ChangeEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const task = await apiConfig.post("/tasks", model);
 
-		console.log(task);
+		if (id !== undefined) {
+			await apiConfig.put(`/tasks/${id}`, model);
+		} else {
+			await apiConfig.post("/tasks", model);
+		}
+
+		goBack();
 	};
+
+	async function findTask(id: string) {
+		const data = (await apiConfig.get(`/tasks/${id}`)).data;
+
+		setModel({
+			...data,
+		});
+	}
 
 	const goBack = () => {
 		history.goBack();
@@ -47,6 +67,7 @@ const TaskForm: React.FC = () => {
 					<Form.Label>Título</Form.Label>
 					<Form.Control
 						name="title"
+						value={model.title}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => updateModel(e)}
 						type="text"
 						placeholder="Entre com o título"
@@ -57,6 +78,7 @@ const TaskForm: React.FC = () => {
 					<Form.Label>Descrição</Form.Label>
 					<Form.Control
 						name="description"
+						value={model.description}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => updateModel(e)}
 						as="textarea"
 						rows={3}
